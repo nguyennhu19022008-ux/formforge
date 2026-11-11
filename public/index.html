@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="FormForge" />
+  <meta name="theme-color" content="#0F172A" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="icon.png" />
+  <title>FORMFORGE /// Google Form Automation & QA Engine</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ======================================================== -->
+  <!-- MAIN STUDIO DASHBOARD (DIRECT ACCESS)                    -->
+  <!-- ======================================================== -->
+  <div id="page1-view">
+    <!-- Navbar -->
+    <header class="studio-navbar">
+      <div class="brand-badge">
+        <span class="brand-tag">FORMFORGE</span>
+        <span style="color: var(--text-muted); font-size: 0.82rem; font-weight: 600;">STUDIO PRO /// V2.0</span>
+      </div>
+
+      <div class="nav-right">
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          <span>ENGINE HOẠT ĐỘNG (REST API)</span>
+        </div>
+        <button id="btn-shutdown" class="btn-shutdown" title="Dừng và tắt máy chủ FormForge">
+          <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9"/></svg>
+          <span>Tắt Server</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Studio Layout -->
+    <div class="studio-layout">
+      <!-- Sidebar -->
+      <aside class="studio-sidebar">
+        <!-- TAB 0: HƯỚNG DẪN -->
+        <button class="nav-tab-btn active" data-tab="tab-guide">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <span>Hướng dẫn sử dụng</span>
+          <span class="tab-badge chip-cyan">START</span>
+        </button>
+
+        <!-- TAB 1: BÓC TÁCH SCHEMA -->
+        <button class="nav-tab-btn" data-tab="tab-schema">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+          <span>1. Bóc tách Schema</span>
+        </button>
+
+        <!-- TAB 2: CẤU HÌNH & BƠM FORM (GỘP TAB 2 & TAB 3) -->
+        <button class="nav-tab-btn" data-tab="tab-config">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>2. Cấu hình & Bơm Form</span>
+          <span class="tab-badge chip-mono" id="live-badge">READY</span>
+        </button>
+
+        <!-- TAB 3: XUẤT & IMPORT MA TRẬN (TAB 4 CŨ) -->
+        <button class="nav-tab-btn" data-tab="tab-export">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          <span>3. Ma trận & Import CSV</span>
+        </button>
+
+        <!-- TAB 4: AUDIT & GOOGLE SHEETS (TAB 5 CŨ) -->
+        <button class="nav-tab-btn" data-tab="tab-audit">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span>4. Audit & Soi Dấu vết</span>
+        </button>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="studio-content">
+
+        <!-- ========================================== -->
+        <!-- TAB 0: HƯỚNG DẪN SỬ DỤNG TOÀN TẬP         -->
+        <!-- ========================================== -->
+        <section class="tab-panel active" id="tab-guide">
+          <div class="section-header">
+            <h2 class="section-title">Cẩm nang Sử dụng FormForge Studio V2</h2>
+            <p class="section-desc">Hướng dẫn chi tiết từng bước vận hành hệ thống kiểm thử tự động, bóc tách cấu trúc biểu mẫu Google Form và mô phỏng số liệu định lượng chuẩn SPSS/SEM.</p>
+          </div>
+
+          <!-- Quick Action Bar -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: 4px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-weight: 800; font-size: 1rem; color: var(--text-primary);">⚡ Bắt đầu nhanh trong 30 giây</div>
+              <div style="color: var(--text-muted); font-size: 0.85rem;">Bạn chưa có sẵn biểu mẫu? Nhấn nút dưới đây để nạp tự động một Google Form mẫu và trải nghiệm ngay quy trình.</div>
+            </div>
+            <button class="btn-primary" onclick="loadSampleFormAndInspect()">
+              Dùng thử Form Mẫu Test →
+            </button>
+          </div>
+
+          <!-- 5 Steps Walkthrough -->
+          <div class="guide-step">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <div class="step-title">Chuẩn bị Google Form & Vô hiệu hóa Rào cản Đăng nhập</div>
+              <div class="step-body">
+                Để bot có thể gửi phản hồi tự động qua giao thức HTTP POST, Google Form cần ở trạng thái <strong>Công khai (Public)</strong>:
+                <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
+                  <li>Mở Google Form ở chế độ chỉnh sửa (link đuôi <code>/edit</code>).</li>
+                  <li>Chuyển sang tab <strong>Cài đặt (Settings)</strong> $\rightarrow$ mục <strong>Câu trả lời (Responses)</strong>.</li>
+                  <li><strong>TẮT</strong> nút <em>"Giới hạn ở 1 câu trả lời"</em> (Limit to 1 response) và <strong>TẮT</strong> <em>"Thu thập địa chỉ email"</em>.</li>
+                </ul>
+                <div class="guide-callout">
+                  <strong>⚠️ Lưu ý quan trọng:</strong> Nếu form vẫn bật "Giới hạn 1 câu trả lời", Google sẽ kích hoạt cơ chế bắt buộc đăng nhập Gmail. Khi đó mọi lượt gửi ẩn danh sẽ bị chặn với mã lỗi <code>HTTP 401 Unauthorized</code>.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <div class="step-title">Bóc tách Schema & Nhận diện Entry ID (Tab 1)</div>
+              <div class="step-body">
+                Dán đường dẫn form (dạng <code>https://docs.google.com/forms/d/e/.../viewform</code> hoặc link <code>/edit</code>) vào ô nhập liệu ở <strong>Tab 1</strong> và bấm <strong>"Phân tích Schema"</strong>.
+                <br>Hệ thống sẽ ngầm đọc biến toàn cục <code>FB_PUBLIC_LOAD_DATA_</code> trong HTML để bóc tách mã định danh từng câu hỏi (<code>entry.198273645</code>), loại câu hỏi và token <code>fbzx</code>.
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="step-num">03</div>
+            <div class="step-content">
+              <div class="step-title">Cấu hình Đa nhân tố & Bơm Form Trực tiếp (Tab 2)</div>
+              <div class="step-body">
+                Ở <strong>Tab 2</strong>, tất cả chức năng cấu hình và nộp phiếu đã được tích hợp làm một:
+                <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
+                  <li><strong>Số lượng & Mô hình toán</strong>: Đặt số lượng phiếu, chọn mô hình Hiệp phương sai Đa nhân tố để đảm bảo Cronbach's Alpha $> 0.75$.</li>
+                  <li><strong>Nhịp phát (Pacing)</strong>: Chọn <em>"Rải rác người thật" (1s - 3s)</em> hoặc <em>"Tốc độ cao" (~150ms)</em>.</li>
+                  <li><strong>Nhân tố & Đảo ngược</strong>: Gán câu hỏi vào F1, F2, Y và bật tính năng đảo ngược điểm cho câu hỏi phủ định ($6 - Score$).</li>
+                </ul>
+                Nhấn <strong>"Bắt đầu Nộp phiếu"</strong> và theo dõi thanh tiến độ cùng log terminal thời gian thực ngay trên cùng màn hình.
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-step">
+            <div class="step-num">04</div>
+            <div class="step-content">
+              <div class="step-title">Xuất Ma trận cho SPSS & Nhập File CSV Ngoài (Tab 3)</div>
+              <div class="step-body">
+                <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
+                  <li><strong>Xuất CSV</strong>: Tải file `.csv` chuẩn hóa để nạp vào IBM SPSS Statistics hoặc SmartPLS.</li>
+                  <li><strong>Nhập CSV Ngoài</strong>: Tải lên file Excel/CSV có sẵn dữ liệu của bạn để hệ thống tự động bóc tách và bơm vào Google Form.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="guide-step" style="border-bottom: none;">
+            <div class="step-num">05</div>
+            <div class="step-content">
+              <div class="step-title">Kiểm toán Tâm trắc học & Google Apps Script (Tab 4)</div>
+              <div class="step-body">
+                Bấm <strong>"Chạy Kiểm toán Liêm chính"</strong> để hệ thống tính ngay hệ số <strong>Cronbach's Alpha</strong>, kiểm tra tỷ lệ điền ẩu (Straight-lining) và lấy mã nguồn Google Apps Script đồng hành.
+              </div>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 1: BÓC TÁCH SCHEMA                    -->
+        <!-- ========================================== -->
+        <section class="tab-panel" id="tab-schema">
+          <div class="section-header">
+            <h2 class="section-title">Bóc tách Schema Google Form</h2>
+            <p class="section-desc">Nhập đường dẫn Google Form (dạng /viewform hoặc /edit). Hệ thống sẽ tự động bóc tách mã định danh FB_PUBLIC_LOAD_DATA_, Entry IDs và cấu trúc phân luồng.</p>
+          </div>
+
+          <div class="input-group">
+            <input type="url" id="form-url-input" class="text-input" placeholder="Dán link Google Form (vd: https://docs.google.com/forms/d/e/.../viewform)" />
+            <button class="btn-primary" id="btn-parse-schema" onclick="handleParseSchema()">
+              <span>Phân tích Schema</span>
+            </button>
+          </div>
+
+          <div id="parse-loading" style="display: none; padding: 2rem; text-align: center; color: var(--accent-blue); background: var(--bg-surface); border: 1px dashed var(--border-medium); border-radius: 4px; margin-bottom: 1.5rem;">
+            <div style="font-family: var(--font-mono); font-weight: 700;">Đang kết nối tới máy chủ Google và bóc tách cấu trúc HTML...</div>
+          </div>
+
+          <div id="schema-results" style="display: none;">
+            <!-- Summary Stats -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+              <div class="stat-item">
+                <div class="stat-label">Tiêu đề Biểu mẫu</div>
+                <div class="stat-value" id="stat-form-title" style="font-size: 1.1rem; font-family: var(--font-display);">-</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Số câu hỏi nhận dạng</div>
+                <div class="stat-value" id="stat-q-count">0</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Phân trang (Sections)</div>
+                <div class="stat-value" id="stat-page-count" style="font-size: 0.95rem; font-family: var(--font-mono);">-</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Yêu cầu đăng nhập</div>
+                <div class="stat-value" id="stat-login-status">-</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Anti-Replay Token (fbzx)</div>
+                <div class="stat-value" id="stat-fbzx" style="font-size: 0.95rem;">-</div>
+              </div>
+            </div>
+
+            <!-- Questions Table -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Danh mục Biến & Entry ID đã phát hiện</h3>
+              <span style="font-size: 0.82rem; color: var(--text-muted);">Sẵn sàng ánh xạ tham số submit</span>
+            </div>
+
+            <div class="data-table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 45px;">#</th>
+                    <th style="width: 150px;">Entry ID</th>
+                    <th style="width: 140px;">Phân phần</th>
+                    <th style="width: 130px;">Loại câu hỏi</th>
+                    <th>Nội dung câu hỏi</th>
+                    <th style="width: 220px;">Phương án lựa chọn</th>
+                    <th style="width: 90px;">Bắt buộc</th>
+                  </tr>
+                </thead>
+                <tbody id="questions-tbody">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+              <button class="btn-primary" onclick="switchTab('tab-config')">
+                Tiếp tục: Cấu hình & Bơm Form →
+              </button>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 2: CẤU HÌNH & BƠM FORM (LIVE DISPATCH) -->
+        <!-- ========================================== -->
+        <section class="tab-panel" id="tab-config">
+          <div class="section-header">
+            <h2 class="section-title">Cấu hình Đa nhân tố & Điều phối Bơm Form Trực tiếp</h2>
+            <p class="section-desc">Thiết lập số lượng mẫu, mô hình hiệp phương sai SPSS (Cronbach's Alpha > 0.75), điều chỉnh nhịp độ gửi và kích hoạt bơm dữ liệu trực tiếp vào Google Form.</p>
+          </div>
+
+          <!-- BENTO TOP BAR: CẤU HÌNH THÔNG SỐ VÀ NÚT KÍCH HOẠT ĐIỀU PHỐI -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-hairline); border-radius: 6px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+            <div class="config-dispatch-bar">
+              
+              <!-- Cột 1: Số lượng mẫu -->
+              <div>
+                <label class="stat-label">Số lượng phiếu (Count)</label>
+                <input type="number" id="cfg-count" class="text-input" value="50" min="1" max="5000" style="width: 100%; margin-top: 0.4rem;" oninput="updateEtcEstimate()" />
+              </div>
+
+              <!-- Cột 2: Mô hình thống kê -->
+              <div>
+                <label class="stat-label">Mô hình toán thống kê</label>
+                <select id="cfg-mode" class="text-input" style="width: 100%; margin-top: 0.4rem;">
+                  <option value="covariance">Hiệp phương sai Đa nhân tố (Alpha > 0.75)</option>
+                  <option value="random">Trọng số ngẫu nhiên (Weighted Random)</option>
+                </select>
+              </div>
+
+              <!-- Cột 3: Chế độ gửi & Đa luồng song song -->
+              <div>
+                <label class="stat-label">Chế độ gửi & Đa luồng</label>
+                <select id="dispatch-pacing" class="text-input" style="width: 100%; margin-top: 0.4rem;" onchange="updateEtcEstimate()">
+                  <option value="throttled">Rải rác người thật (Giãn cách 1s - 3s)</option>
+                  <option value="instant">Tuần tự tiêu chuẩn (~150ms / phiếu)</option>
+                  <option value="parallel_5">⚡ Song song 5 luồng (Tăng tốc 5x)</option>
+                  <option value="parallel_10" selected>🚀 Song song 10 luồng (Bơm hàng loạt 10x)</option>
+                  <option value="parallel_20">🔥 Song song 20 luồng (Turbo Max 20x)</option>
+                </select>
+              </div>
+
+              <!-- Cột 4: Nút Bắt đầu Điều phối -->
+              <div>
+                <button class="btn-primary" id="btn-start-dispatch" style="width: 100%; height: 42px; font-weight: 800;" onclick="handleStartDispatch()">
+                  🚀 Bắt đầu Nộp phiếu
+                </button>
+              </div>
+            </div>
+
+            <!-- DÒNG THỜI GIAN DỰ KIẾN HOÀN THÀNH (LIVE ETC ESTIMATOR) -->
+            <div class="etc-estimator-box">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: var(--accent-emerald-bg); color: var(--accent-emerald); border-radius: 50%; font-size: 12px; font-weight: 800;">⏱</span>
+                <span style="color: var(--text-secondary); font-weight: 600;">Thời gian dự kiến hoàn thành:</span>
+                <strong id="etc-estimate-text" style="color: var(--text-primary); font-size: 0.95rem; font-family: var(--font-mono);">~1.5 giây</strong>
+              </div>
+              <div id="etc-rate-badge" style="color: var(--accent-emerald); font-weight: 700; font-size: 0.8rem; background: var(--accent-emerald-bg); padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid rgba(5,150,105,0.2);">
+                ⚡ Tốc độ ~30 - 35 phiếu/giây (10 luồng song song)
+              </div>
+            </div>
+
+            <!-- Nút phụ: Sinh thử dữ liệu & Tự động gom nhóm -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px dashed var(--border-hairline);">
+              <div style="display: flex; gap: 0.75rem;">
+                <button class="btn-secondary" onclick="handleGeneratePreview()" style="font-size: 0.82rem;">
+                  ⚡ Sinh thử Ma trận Mẫu
+                </button>
+                <button class="btn-secondary" onclick="autoGroupConstructs()" style="font-size: 0.82rem;">
+                  🪄 Tự động gom nhóm (F1, F2, Y)
+                </button>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">
+                Tự động tối ưu Cronbach's Alpha $\ge 0.75$ & kiểm soát Straight-lining
+              </div>
+            </div>
+          </div>
+
+          <!-- THANH TIẾN ĐỘ & TERMINAL LOG GIÁM SÁT REALTIME -->
+          <div style="margin-bottom: 2rem;">
+            <div class="stat-item" style="margin-bottom: 0.85rem; padding: 1rem 1.25rem;">
+              <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 0.6rem; font-weight: 700;">
+                <span>Tiến độ thực thi: <strong id="dispatch-progress-text" style="color: var(--text-primary);">0 / 0</strong></span>
+                <span id="dispatch-percent-text" style="color: var(--accent-emerald);">0%</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="dispatch-progress-fill"></div>
+              </div>
+            </div>
+
+            <div class="console-box" id="dispatch-console" style="max-height: 180px;">
+              <div class="log-entry log-info">[SYSTEM READY] Sẵn sàng điều phối. Bấm "Bắt đầu Nộp phiếu" để thực thi trực tiếp vào Google Form.</div>
+            </div>
+          </div>
+
+          <!-- DANH SÁCH CÂU HỎI, TRỌNG SỐ & BIỂU ĐỒ SVG -->
+          <div class="section-header">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Tùy chỉnh Nhân tố, Đảo ngược & Biểu đồ SVG Từng Câu Hỏi</h3>
+            <p class="section-desc">Kéo thanh trượt để chỉnh tỷ lệ phân bổ đáp án. Biểu đồ cột SVG sẽ tự động cập nhật thời gian thực.</p>
+          </div>
+
+          <div id="weights-editor-container">
+            <p style="color: var(--text-muted); font-style: italic; padding: 2rem; background: var(--bg-surface); border: 1px dashed var(--border-medium); border-radius: 4px; text-align: center;">Chưa nạp câu hỏi. Vui lòng chạy phân tích Schema ở Tab 1 trước.</p>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 3: XEM & IMPORT MA TRẬN DỮ LIỆU       -->
+        <!-- ========================================== -->
+        <section class="tab-panel" id="tab-export">
+          <div class="section-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2 class="section-title">Xem trước, Xuất & Nhập Ma trận Dữ liệu</h2>
+                <p class="section-desc">Xuất file CSV để nạp vào IBM SPSS Statistics hoặc tải lên file dữ liệu có sẵn của bạn để tự động bơm vào Google Form.</p>
+              </div>
+              <div style="display: flex; gap: 0.75rem;">
+                <label class="btn-secondary" style="cursor: pointer; display: flex; align-items: center; gap: 0.4rem;">
+                  📤 Nhập File CSV có sẵn
+                  <input type="file" id="csv-file-input" accept=".csv" style="display: none;" onchange="handleImportCsvFile(event)" />
+                </label>
+                <button class="btn-primary" onclick="handleExportCsv()">
+                  📥 Tải file CSV (.csv)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="data-table-container" style="max-height: 500px;">
+            <table class="data-table">
+              <thead id="export-thead">
+                <tr><th>#</th><th>Dữ liệu mẫu</th></tr>
+              </thead>
+              <tbody id="export-tbody">
+                <tr><td colspan="2" style="text-align: center; color: var(--text-muted); padding: 3rem;">Chưa có dữ liệu. Vui lòng bấm sinh ma trận ở Tab 2 hoặc nhập file CSV.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- TAB 4: AUDIT LIÊM CHÍNH & DẤU VẾT FORENSIC -->
+        <!-- ========================================== -->
+        <section class="tab-panel" id="tab-audit">
+          <div class="section-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h2 class="section-title">Kiểm toán Liêm chính Học thuật & Dấu vết số</h2>
+                <p class="section-desc">Tự động phân tích ma trận dữ liệu hiện tại để tính toán chỉ số Cronbach's Alpha, phát hiện phiếu điền ẩu (Straight-lining) và cảnh báo nguy cơ bị Hội đồng phát hiện.</p>
+              </div>
+              <button class="btn-primary" onclick="handleRunAuditReport()">
+                🔬 Chạy Kiểm toán Dữ liệu Hiện tại
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Audit Metrics (Injected via JS) -->
+          <div id="audit-metrics-container" style="display: none; margin-bottom: 2rem;">
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-label">Hệ số Cronbach's Alpha Tổng</div>
+                <div class="stat-value" id="audit-alpha-val" style="color: var(--accent-emerald);">-</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;" id="audit-alpha-rating">-</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Tỷ lệ Điền ẩu (Straight-lining)</div>
+                <div class="stat-value" id="audit-straight-val">-</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;" id="audit-straight-rating">-</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Quy mô Mẫu Kiểm định (N)</div>
+                <div class="stat-value" id="audit-sample-val">0</div>
+                <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">Số dòng quan sát</div>
+              </div>
+            </div>
+
+            <!-- Alpha by Constructs Table -->
+            <div id="construct-alphas-box" style="display: none; margin-bottom: 1.5rem;">
+              <h4 style="font-size: 0.95rem; font-weight: 800; margin-bottom: 0.5rem;">Chỉ số Cronbach's Alpha theo từng Nhân tố (Constructs)</h4>
+              <div class="data-table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr><th>Nhân tố</th><th>Số biến</th><th>Hệ số Alpha</th><th>Đánh giá kiểm định</th></tr>
+                  </thead>
+                  <tbody id="construct-alphas-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Forensic Audit Checklist -->
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.85rem;">Bảng kiểm tra 4 nguy cơ bị Hội đồng phát hiện</h3>
+          <div class="data-table-container" style="margin-bottom: 2rem;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 190px;">Dấu vết số (Vector)</th>
+                  <th style="width: 120px;">Mức độ rủi ro</th>
+                  <th>Phương thức phát hiện</th>
+                  <th>Biện pháp phòng ngừa</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Version History</strong> (Sheets)</td>
+                  <td><span class="chip chip-danger">CỰC CAO</span></td>
+                  <td>Giảng viên mở Tệp &gt; Lịch sử phiên bản: thấy toàn bộ cột thời gian bị chỉnh sửa hàng loạt bởi 1 email lạ.</td>
+                  <td>Tự copy data sang trang tính độc lập trước khi gửi cho hội đồng; không gửi file gốc có quyền view.</td>
+                </tr>
+                <tr>
+                  <td><strong>Form Desync</strong> (Lệch pha)</td>
+                  <td><span class="chip chip-danger">CỰC CAO</span></td>
+                  <td>Tab "Câu trả lời" trên Google Form ghi nhận hàng trăm lượt submit trong 3 phút, lệch hoàn toàn so với Sheet.</td>
+                  <td>Nếu giảng viên yêu cầu quyền xem Form gốc, cơ chế Fake Timestamp sẽ bị lộ ngay lập tức.</td>
+                </tr>
+                <tr>
+                  <td><strong>Common Method Bias</strong></td>
+                  <td><span class="chip chip-amber">TRUNG BÌNH</span></td>
+                  <td>Các biến câu hỏi không tương quan hoặc hệ số Cronbach's Alpha bị âm/nhỏ hơn 0.5 khi dùng tool ngẫu nhiên cơ bản.</td>
+                  <td>Bắt buộc dùng thuật toán mô phỏng hiệp phương sai đa biến (Covariance Likert) để đảm bảo độ tin cậy thang đo.</td>
+                </tr>
+                <tr>
+                  <td><strong>IP / User-Agent Clustering</strong></td>
+                  <td><span class="chip chip-success">THẤP</span></td>
+                  <td>Google ghi nhận hàng trăm lượt submit từ cùng một khối IP trong khoảng thời gian hẹp.</td>
+                  <td>Sử dụng cơ chế rải phiếu giãn cách (Throttled) hoặc chạy bằng script nội bộ Google Apps Script.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- GAS Script Viewer -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Mã nguồn Google Apps Script đồng hành (Companion Script)</h3>
+            <button class="btn-secondary" onclick="copyGasCode(this)">📋 Sao chép mã nguồn GAS</button>
+          </div>
+          <pre class="code-preview" id="gas-code-preview">Đang tải mã nguồn Google Apps Script...</pre>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="engine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "formforge-engine",
+  "version": "1.0.0",
+  "description": "Google Form Automated Testing, Schema Inspector & Response Simulation Suite",
+  "main": "server.js",
+  "bin": {
+    "formforge": "./bin/cli.js"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "cli": "node bin/cli.js"
+  },
+  "keywords": [
+    "google-forms",
+    "form-automation",
+    "schema-inspector",
+    "qa-testing",
+    "response-simulator"
+  ],
+  "author": "Antigravity Pair Programmer",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  }
+}
