@@ -253,16 +253,6 @@ const server = http.createServer(async (req, res) => {
         return sendJson(res, 200, { success: true, code: GOOGLE_APPS_SCRIPT_CODE });
       }
 
-      // 9. POST /api/shutdown
-      if (pathname === '/api/shutdown' && req.method === 'POST') {
-        sendJson(res, 200, { success: true, message: 'Máy chủ đang tắt...' });
-        console.log('\n[SHUTDOWN] Nhận lệnh tắt từ người dùng. Đang đóng máy chủ...');
-        setTimeout(() => {
-          process.exit(0);
-        }, 500);
-        return;
-      }
-
       return sendJson(res, 404, { success: false, error: 'Endpoint API không tồn tại' });
     } catch (err) {
       console.error('API Error:', err);

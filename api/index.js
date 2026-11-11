@@ -230,11 +230,6 @@ export default async function handler(req, res) {
       return sendJson(res, 200, { success: true, code: GOOGLE_APPS_SCRIPT_CODE });
     }
 
-    // 9. Shutdown fallback
-    if (pathname.endsWith('/shutdown')) {
-      return sendJson(res, 200, { success: true, message: 'Đang chạy trên nền tảng Cloud Vercel Serverless.' });
-    }
-
     return sendJson(res, 404, { success: false, error: `Endpoint không tồn tại: ${pathname}` });
   } catch (err) {
     return sendJson(res, 500, { success: false, error: err.message || 'Lỗi xử lý máy chủ' });

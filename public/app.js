@@ -916,31 +916,4 @@ window.addEventListener('DOMContentLoaded', () => {
   loadGasCode();
   loadFromStorage();
   updateEtcEstimate();
-
-  const btnShutdown = document.getElementById('btn-shutdown');
-  if (btnShutdown) {
-    btnShutdown.addEventListener('click', async () => {
-      const confirmClose = confirm('Bạn có chắc chắn muốn TẮT máy chủ FormForge Studio không?\n\nSau khi tắt, cổng 3000 sẽ được giải phóng hoàn toàn.');
-      if (!confirmClose) return;
-
-      try {
-        btnShutdown.disabled = true;
-        btnShutdown.textContent = 'Đang tắt...';
-        await fetch('/api/shutdown', { method: 'POST' });
-      } catch (err) {
-        // Fetch error is expected as the server process terminates
-      }
-
-      document.body.innerHTML = `
-        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; font-family:var(--font-sans, sans-serif); background:#F8FAFC; color:#0F172A; text-align:center; padding:2rem;">
-          <div style="width:64px; height:64px; border-radius:50%; background:#FEF2F2; color:#DC2626; display:flex; align-items:center; justify-content:center; margin-bottom:1.5rem; font-size:28px; border:1px solid #FCA5A5;">✓</div>
-          <h1 style="font-size:1.8rem; font-weight:800; margin-bottom:0.75rem; letter-spacing:-0.5px;">Máy Chủ Đã Tắt Thành Công</h1>
-          <p style="color:#64748B; max-width:480px; line-height:1.6; margin-bottom:2rem; font-size:0.95rem;">Máy chủ FormForge Studio và cổng 3000 đã được giải phóng hoàn toàn. Bạn có thể an tâm đóng tab trình duyệt này lại.</p>
-          <div style="font-size:0.88rem; color:#64748B; background:#FFFFFF; padding:0.75rem 1.25rem; border:1px solid #E2E8F0; border-radius:8px;">
-            Khi muốn mở lại, hãy nhấp đúp vào biểu tượng <strong>AUTO FORM</strong> trên Desktop.
-          </div>
-        </div>
-      `;
-    });
-  }
 });
