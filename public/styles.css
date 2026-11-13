@@ -515,3 +515,9 @@ body, html {
   gap: 0.75rem;
   font-size: 0.85rem;
 }
+
+@media (max-width: 900px) {
+  .bulk-code-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

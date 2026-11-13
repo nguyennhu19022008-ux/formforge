@@ -336,10 +336,70 @@
             </div>
           </div>
 
+          <!-- CẤU HÌNH NHANH BẰNG CODE (BULK CODE CONFIG) -->
+          <div style="background: #ffffff; border: 1px solid var(--border-medium); border-radius: 6px; padding: 1.35rem 1.5rem; margin-bottom: 2rem;">
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border-hairline);">
+              <div>
+                <h3 style="font-size: 1.08rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                  <span>Cấu hình Tỷ lệ % Hàng loạt bằng Code</span>
+                </h3>
+                <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 0.2rem;">Nhập hoặc dán code để thiết lập % cho toàn bộ câu hỏi cùng lúc, không cần gõ tay từng ô.</p>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                <button class="btn-secondary" onclick="handleExportWeightsCode()" style="font-size: 0.82rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                  <span>Lấy mẫu Code của Form</span>
+                </button>
+                <button class="btn-primary" onclick="handleApplyWeightsCode()" style="font-size: 0.82rem; padding: 0.45rem 1rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                  <span>Áp dụng Code vào Bảng</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="bulk-code-grid" style="display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 1.25rem; align-items: stretch;">
+              <!-- Cột trái: Khung nhập Code -->
+              <div style="display: flex; flex-direction: column;">
+                <textarea id="bulk-weights-code-input" class="text-input" rows="10" spellcheck="false"
+                  placeholder="# Bấm 'Lấy mẫu Code của Form' ở góc trên hoặc dán code tại đây.&#10;# Ví dụ cú pháp rút gọn:&#10;1: 40, 35, 20, 5&#10;2: 70, 50, 30, 20, 60&#10;all: 10, 15, 30, 30, 15"
+                  style="width: 100%; flex: 1; font-family: var(--font-mono); font-size: 0.82rem; line-height: 1.55; background: #0F172A; color: #F8FAFC; border: 1px solid #1E293B; border-radius: 4px; padding: 0.85rem 1rem; resize: vertical;"></textarea>
+                <div id="bulk-code-status" style="margin-top: 0.5rem; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); min-height: 1.2rem;"></div>
+              </div>
+
+              <!-- Cột phải: Hướng dẫn cú pháp -->
+              <div style="background: var(--bg-subtle, #F8FAFC); border: 1px solid var(--border-hairline); border-radius: 4px; padding: 1rem 1.15rem; font-size: 0.82rem; line-height: 1.55; color: var(--text-secondary);">
+                <div style="font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 0.86rem; text-transform: uppercase; letter-spacing: 0.3px;">
+                  Hướng dẫn sử dụng nhanh
+                </div>
+                <ol style="padding-left: 1.15rem; margin-bottom: 0.85rem; display: flex; flex-direction: column; gap: 0.3rem;">
+                  <li>Bấm <strong>Lấy mẫu Code của Form</strong> để tự sinh khung sẵn theo đúng số câu và số đáp án.</li>
+                  <li>Sửa nhanh các con số <code>%</code> (hoặc copy đưa AI điền hộ tỷ lệ).</li>
+                  <li>Bấm <strong>Áp dụng Code vào Bảng</strong> để cập nhật toàn bộ ô nhập &amp; biểu đồ bên dưới.</li>
+                </ol>
+
+                <div style="font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">2 định dạng được hỗ trợ:</div>
+                <div style="margin-bottom: 0.55rem;">
+                  <div style="font-weight: 600; color: var(--text-primary); font-size: 0.78rem;">1. Cú pháp dòng ngắn (Khuyên dùng):</div>
+                  <pre style="background: #ffffff; border: 1px solid var(--border-hairline); padding: 0.45rem 0.6rem; border-radius: 3px; font-family: var(--font-mono); font-size: 0.76rem; color: #0F172A; margin-top: 0.2rem; overflow-x: auto;">1: 40, 35, 20, 5
+2: 80, 60, 40, 20, 10
+all: 10, 15, 30, 30, 15</pre>
+                </div>
+                <div>
+                  <div style="font-weight: 600; color: var(--text-primary); font-size: 0.78rem;">2. Định dạng JSON chuẩn:</div>
+                  <pre style="background: #ffffff; border: 1px solid var(--border-hairline); padding: 0.45rem 0.6rem; border-radius: 3px; font-family: var(--font-mono); font-size: 0.76rem; color: #0F172A; margin-top: 0.2rem; overflow-x: auto;">{"1": [40, 35, 20, 5], "2": [80, 60, 40, 20, 10]}</pre>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                  * Có thể dùng <strong>STT câu</strong> (<code>1</code>, <code>2</code>), <strong>Entry ID</strong> (<code>entry.12345</code>), hoặc <code>all</code> (áp dụng cho mọi câu cùng số đáp án). Dòng bắt đầu bằng <code>#</code> là chú thích.
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- DANH SÁCH CÂU HỎI, TRỌNG SỐ & BIỂU ĐỒ SVG -->
           <div class="section-header">
             <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Tùy chỉnh Nhân tố, Đảo ngược & Biểu đồ SVG Từng Câu Hỏi</h3>
-            <p class="section-desc">Kéo thanh trượt để chỉnh tỷ lệ phân bổ đáp án. Biểu đồ cột SVG sẽ tự động cập nhật thời gian thực.</p>
+            <p class="section-desc">Chỉnh tỷ lệ phân bổ đáp án thủ công hoặc qua khung Code phía trên. Biểu đồ cột SVG sẽ tự động cập nhật thời gian thực.</p>
           </div>
 
           <div id="weights-editor-container">

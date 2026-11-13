@@ -411,6 +411,154 @@ function collectCustomWeights() {
   return weightsMap;
 }
 
+function handleExportWeightsCode() {
+  const statusEl = document.getElementById('bulk-code-status');
+  const textarea = document.getElementById('bulk-weights-code-input');
+  if (!state.formMeta || !state.formMeta.questions || state.formMeta.questions.length === 0) {
+    alert('Vui lòng nạp & bóc tách một biểu mẫu Google Form ở Tab 1 trước.');
+    return;
+  }
+
+  const currentWeights = collectCustomWeights();
+  const choiceTypes = ['RADIO', 'DROPDOWN', 'CHECKBOX', 'SCALE_LIKERT'];
+  const lines = [
+    `# CẤU HÌNH TỶ LỆ % FORMFORGE`,
+    `# Sửa các con số % bên dưới rồi bấm "Áp dụng Code vào Bảng"`,
+    ``
+  ];
+
+  let exportedCount = 0;
+  state.formMeta.questions.forEach((q, idx) => {
+    if (!choiceTypes.includes(q.type) || !q.options || q.options.length === 0) return;
+    exportedCount++;
+    const isCheckbox = q.type === 'CHECKBOX';
+    const defVal = isCheckbox ? 50 : Math.round(100 / q.options.length);
+    const wArr = (currentWeights[q.entryId] && currentWeights[q.entryId].length === q.options.length)
+      ? currentWeights[q.entryId]
+      : new Array(q.options.length).fill(defVal);
+
+    const shortTitle = (q.title || '').replace(/\s+/g, ' ').slice(0, 70);
+    lines.push(`# Câu ${idx + 1} [${q.type}] (${q.options.length} đáp án): ${shortTitle}`);
+    lines.push(`${idx + 1}: ${wArr.join(', ')}`);
+    lines.push('');
+  });
+
+  textarea.value = lines.join('\n').trim();
+  if (statusEl) {
+    statusEl.style.color = '#059669';
+    statusEl.textContent = `✓ Đã xuất khung Code cho ${exportedCount} câu hỏi. Chỉnh sửa số % rồi bấm "Áp dụng Code vào Bảng".`;
+  }
+}
+
+function handleApplyWeightsCode() {
+  const statusEl = document.getElementById('bulk-code-status');
+  const textarea = document.getElementById('bulk-weights-code-input');
+  if (!state.formMeta || !state.formMeta.questions) {
+    alert('Vui lòng nạp & bóc tách một biểu mẫu Google Form ở Tab 1 trước.');
+    return;
+  }
+
+  const raw = (textarea.value || '').trim();
+  if (!raw) {
+    if (statusEl) {
+      statusEl.style.color = '#DC2626';
+      statusEl.textContent = '⚠ Khung code đang trống. Hãy bấm "Lấy mẫu Code của Form" hoặc dán code vào.';
+    }
+    return;
+  }
+
+  const parsedEntries = [];
+  try {
+    if (raw.startsWith('{')) {
+      const jsonObj = JSON.parse(raw);
+      for (const [k, v] of Object.entries(jsonObj)) {
+        if (!Array.isArray(v)) throw new Error(`Giá trị của "${k}" phải là mảng số, ví dụ [40, 30, 30]`);
+        parsedEntries.push({ key: String(k).trim(), nums: v.map(Number) });
+      }
+    } else {
+      const lines = raw.split(/\r?\n/);
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+        // Strip inline comments (# or //)
+        line = line.replace(/(#|\/\/).*$/, '').trim();
+        if (!line) continue;
+
+        const colonIdx = line.indexOf(':');
+        if (colonIdx === -1) {
+          throw new Error(`Dòng ${i + 1} thiếu dấu hai chấm (:): "${line}"`);
+        }
+        const key = line.slice(0, colonIdx).trim();
+        const valStr = line.slice(colonIdx + 1).trim();
+        const nums = valStr
+          .replace(/[\[\]%]/g, '')
+          .split(/[\s,;]+/)
+          .filter(Boolean)
+          .map(Number);
+
+        if (nums.length === 0 || nums.some(n => Number.isNaN(n) || n < 0)) {
+          throw new Error(`Dòng ${i + 1} chứa giá trị % không hợp lệ: "${valStr}"`);
+        }
+        parsedEntries.push({ key, nums });
+      }
+    }
+  } catch (err) {
+    if (statusEl) {
+      statusEl.style.color = '#DC2626';
+      statusEl.textContent = `✕ Lỗi cú pháp: ${err.message}`;
+    }
+    return;
+  }
+
+  const choiceTypes = ['RADIO', 'DROPDOWN', 'CHECKBOX', 'SCALE_LIKERT'];
+  const updatedSet = new Set();
+
+  for (const { key, nums } of parsedEntries) {
+    if (key.toLowerCase() === 'all' || key === '*') {
+      state.formMeta.questions.forEach(q => {
+        if (choiceTypes.includes(q.type) && q.options && q.options.length === nums.length) {
+          state.customWeights[q.entryId] = [...nums];
+          updatedSet.add(q.entryId);
+        }
+      });
+      continue;
+    }
+
+    let targetQ = null;
+    if (/^\d+$/.test(key)) {
+      const idx = parseInt(key, 10) - 1;
+      targetQ = state.formMeta.questions[idx] || null;
+    } else {
+      targetQ = state.formMeta.questions.find(q => q.entryId === key || String(q.rawEntryId) === key) || null;
+    }
+
+    if (targetQ && choiceTypes.includes(targetQ.type) && targetQ.options && targetQ.options.length > 0) {
+      const len = targetQ.options.length;
+      const adjusted = [];
+      for (let j = 0; j < len; j++) {
+        adjusted.push(nums[j] !== undefined ? nums[j] : 0);
+      }
+      state.customWeights[targetQ.entryId] = adjusted;
+      updatedSet.add(targetQ.entryId);
+    }
+  }
+
+  if (updatedSet.size === 0) {
+    if (statusEl) {
+      statusEl.style.color = '#D97706';
+      statusEl.textContent = '⚠ Không có câu hỏi nào khớp với STT hoặc Entry ID trong code bạn nhập.';
+    }
+    return;
+  }
+
+  renderWeightsEditor(state.formMeta);
+  saveToStorage();
+  if (statusEl) {
+    statusEl.style.color = '#059669';
+    statusEl.textContent = `✓ Đã áp dụng thành công tỷ lệ % cho ${updatedSet.size} câu hỏi và cập nhật biểu đồ bên dưới!`;
+  }
+}
+
 async function handleGeneratePreview() {
   if (!state.formMeta) {
     alert('Vui lòng phân tích biểu mẫu ở Tab 1 trước.');
