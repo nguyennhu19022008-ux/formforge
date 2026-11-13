@@ -359,7 +359,6 @@ function renderWeightsEditor(meta) {
     container.appendChild(box);
   });
 }
-}
 
 function handleAssignConstruct(entryId, factorKey) {
   // Remove entry from all
