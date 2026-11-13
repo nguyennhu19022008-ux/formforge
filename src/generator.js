@@ -104,7 +104,9 @@ export function generateSingleResponse(questions, config = {}) {
           if (customWeight && Array.isArray(customWeight) && customWeight.length === q.options.length) {
             const selected = [];
             q.options.forEach((opt, oIdx) => {
-              const prob = (Number(customWeight[oIdx]) || 50) / 100;
+              const rawW = customWeight[oIdx];
+              const weightVal = (rawW !== undefined && rawW !== null && !Number.isNaN(Number(rawW))) ? Number(rawW) : 50;
+              const prob = weightVal / 100;
               if (Math.random() < prob) {
                 selected.push(opt);
               }
