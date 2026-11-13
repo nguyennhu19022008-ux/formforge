@@ -135,8 +135,23 @@ function renderSchemaResults(meta) {
   const tbody = document.getElementById('questions-tbody');
   tbody.innerHTML = '';
 
+  let lastSectionIdx = -1;
+
   meta.questions.forEach((q, idx) => {
     if (q.isSection) return;
+
+    if (q.sectionIndex !== undefined && q.sectionIndex !== lastSectionIdx && (meta.pageCount > 1 || (meta.sections && meta.sections.length > 1))) {
+      lastSectionIdx = q.sectionIndex;
+      const secTr = document.createElement('tr');
+      secTr.style.background = '#F8FAFC';
+      secTr.innerHTML = `
+        <td colspan="7" style="padding: 0.65rem 1rem; font-weight: 800; color: #0F172A; border-top: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0;">
+          <span class="chip chip-mono" style="margin-right: 0.5rem; background: #0F172A; color: #FFFFFF;">PHẦN ${q.sectionIndex + 1}/${meta.pageCount || 1}</span>
+          ${escapeHtml(q.sectionTitle || ('Phần ' + (q.sectionIndex + 1)))}
+        </td>
+      `;
+      tbody.appendChild(secTr);
+    }
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -146,7 +161,7 @@ function renderSchemaResults(meta) {
       <td><span class="chip chip-cyan">${q.type}</span></td>
       <td><strong style="color: var(--text-primary);">${escapeHtml(q.title)}</strong></td>
       <td style="color: var(--text-secondary); font-size: 0.82rem;">
-        ${q.options.length > 0 ? q.options.slice(0, 4).join(' | ') + (q.options.length > 4 ? '...' : '') : 'Văn bản mở'}
+        ${q.options && q.options.length > 0 ? q.options.slice(0, 4).join(' | ') + (q.options.length > 4 ? '...' : '') : 'Văn bản mở'}
       </td>
       <td>${q.isRequired ? '<span class="chip chip-danger">Có</span>' : '<span style="color:var(--text-muted)">Không</span>'}</td>
     `;
@@ -158,12 +173,17 @@ function renderSchemaResults(meta) {
 // ==========================================
 // 4. MULTI-FACTOR & WEIGHTS CONFIG (TAB 2)
 // ==========================================
-function autoGroupConstructs() {
+function autoGroupConstructs(isManual = false) {
   if (!state.formMeta) return;
   state.constructs = {};
 
   const likertQuestions = state.formMeta.questions.filter(q => q.type === 'SCALE_LIKERT');
-  if (likertQuestions.length === 0) return;
+  if (likertQuestions.length === 0) {
+    if (isManual) {
+      alert('Biểu mẫu này gồm các câu hỏi trắc nghiệm & hộp kiểm định tính (không phải thang đo số Likert 1-5).\n\nThuật toán hiệp phương sai SPSS Likert chỉ kích hoạt với thang đo số. Với biểu mẫu hiện tại, hệ thống sẽ tự động phân phối phản hồi chuẩn xác theo % tỷ lệ bạn cấu hình ở từng câu hỏi.');
+    }
+    return;
+  }
 
   // Heuristic: Group every 2-3 items into F1, F2, Y
   let factorIndex = 1;
@@ -182,6 +202,10 @@ function autoGroupConstructs() {
       factorIndex++;
     }
   });
+
+  if (isManual) {
+    alert(`Đã tự động gom nhóm ${likertQuestions.length} biến thang đo Likert vào các nhân tố F1, F2, Y!`);
+  }
 }
 
 function renderSvgBarChart(options, weights) {
@@ -223,10 +247,11 @@ function renderWeightsEditor(meta) {
   const container = document.getElementById('weights-editor-container');
   container.innerHTML = '';
 
-  const choiceQuestions = meta.questions.filter(q => ['RADIO', 'DROPDOWN', 'SCALE_LIKERT'].includes(q.type));
+  const choiceQuestions = meta.questions.filter(q => ['RADIO', 'DROPDOWN', 'CHECKBOX', 'SCALE_LIKERT'].includes(q.type));
+  const textQuestions = meta.questions.filter(q => ['SHORT_TEXT', 'PARAGRAPH'].includes(q.type));
 
-  if (choiceQuestions.length === 0) {
-    container.innerHTML = '<p style="color: var(--text-muted);">Biểu mẫu này không có câu hỏi trắc nghiệm hoặc thang đo.</p>';
+  if (choiceQuestions.length === 0 && textQuestions.length === 0) {
+    container.innerHTML = '<p style="color: var(--text-muted);">Biểu mẫu này không có câu hỏi nào cần cấu hình.</p>';
     return;
   }
 
@@ -238,10 +263,12 @@ function renderWeightsEditor(meta) {
     box.style.borderRadius = '4px';
     box.style.marginBottom = '1.25rem';
 
-    let optionsInputs = '';
-    const equalWeight = Math.round(100 / q.options.length);
+    const isCheckbox = q.type === 'CHECKBOX';
+    const isLikert = q.type === 'SCALE_LIKERT';
+    const equalWeight = isCheckbox ? 50 : (q.options.length > 0 ? Math.round(100 / q.options.length) : 20);
     const currentWeights = (state.customWeights[q.entryId]) || new Array(q.options.length).fill(equalWeight);
 
+    let optionsInputs = '';
     q.options.forEach((opt, oIdx) => {
       const wVal = currentWeights[oIdx] !== undefined ? currentWeights[oIdx] : equalWeight;
       optionsInputs += `
@@ -264,7 +291,7 @@ function renderWeightsEditor(meta) {
 
     // Construct Selector for Likert items
     let constructSelectorHtml = '';
-    if (q.type === 'SCALE_LIKERT') {
+    if (isLikert) {
       const assignedConstruct = Object.keys(state.constructs).find(c => state.constructs[c].includes(q.entryId)) || '';
       const isReverse = state.reverseItems.includes(q.entryId);
 
@@ -286,15 +313,18 @@ function renderWeightsEditor(meta) {
       `;
     }
 
+    const typeLabel = isCheckbox ? 'HỘP KIỂM (CHỌN NHIỀU)' : (isLikert ? 'THANG ĐO LIKERT' : q.type);
     const chartHtml = `<div id="chart-preview-${q.entryId}">${renderSvgBarChart(q.options, currentWeights)}</div>`;
 
     box.innerHTML = `
-      <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.65rem; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
+      <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.65rem; color: var(--text-primary); display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;">
         <div>
-          <span class="chip chip-mono" style="margin-right: 0.6rem;">${q.entryId}</span>
-          ${escapeHtml(q.title)}
+          <span class="chip chip-mono" style="margin-right: 0.4rem;">${q.entryId}</span>
+          <span class="chip chip-mono" style="font-size:0.75rem; margin-right: 0.4rem;">${escapeHtml(q.sectionTitle || 'Phần 1')}</span>
+          <div style="margin-top: 0.35rem; line-height: 1.4;">${escapeHtml(q.title)}</div>
+          ${isCheckbox ? '<div style="font-size: 0.76rem; color: var(--text-muted); font-weight: normal; margin-top: 0.25rem;">* Hộp kiểm cho phép chọn nhiều mục: Nhập % xác suất tick chọn cho từng phương án.</div>' : ''}
         </div>
-        <span class="chip chip-cyan">${q.type}</span>
+        <span class="chip chip-cyan" style="white-space: nowrap;">${typeLabel}</span>
       </div>
       ${constructSelectorHtml}
       <div style="padding-left: 0.25rem;">
@@ -305,6 +335,30 @@ function renderWeightsEditor(meta) {
 
     container.appendChild(box);
   });
+
+  textQuestions.forEach(q => {
+    const box = document.createElement('div');
+    box.style.background = '#ffffff';
+    box.style.border = '1px solid var(--border-hairline)';
+    box.style.padding = '1.25rem 1.5rem';
+    box.style.borderRadius = '4px';
+    box.style.marginBottom = '1.25rem';
+    box.innerHTML = `
+      <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.45rem; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <span class="chip chip-mono" style="margin-right: 0.4rem;">${q.entryId}</span>
+          <span class="chip chip-mono" style="font-size:0.75rem; margin-right: 0.4rem;">${escapeHtml(q.sectionTitle || 'Phần 1')}</span>
+          <div style="margin-top: 0.35rem;">${escapeHtml(q.title)}</div>
+        </div>
+        <span class="chip chip-mono">${q.type === 'PARAGRAPH' ? 'ĐOẠN VĂN' : 'VĂN BẢN NGẮN'}</span>
+      </div>
+      <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.35rem;">
+        Hệ thống tự động sinh nội dung phản hồi văn bản mở ngẫu nhiên, tự nhiên và thực tế.
+      </div>
+    `;
+    container.appendChild(box);
+  });
+}
 }
 
 function handleAssignConstruct(entryId, factorKey) {

@@ -101,9 +101,24 @@ export function generateSingleResponse(questions, config = {}) {
 
       case 'CHECKBOX':
         if (q.options.length > 0) {
-          const countToSelect = Math.max(1, Math.floor(Math.random() * Math.min(3, q.options.length)));
-          const shuffled = [...q.options].sort(() => 0.5 - Math.random());
-          chosenVal = shuffled.slice(0, countToSelect);
+          if (customWeight && Array.isArray(customWeight) && customWeight.length === q.options.length) {
+            const selected = [];
+            q.options.forEach((opt, oIdx) => {
+              const prob = (Number(customWeight[oIdx]) || 50) / 100;
+              if (Math.random() < prob) {
+                selected.push(opt);
+              }
+            });
+            if (selected.length === 0) {
+              const fallbackOpt = pickWeighted(q.options, customWeight);
+              selected.push(fallbackOpt || q.options[0]);
+            }
+            chosenVal = selected;
+          } else {
+            const countToSelect = Math.max(1, Math.floor(Math.random() * Math.min(3, q.options.length)));
+            const shuffled = [...q.options].sort(() => 0.5 - Math.random());
+            chosenVal = shuffled.slice(0, countToSelect);
+          }
         }
         break;
 

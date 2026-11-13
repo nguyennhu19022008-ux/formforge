@@ -114,7 +114,16 @@ export async function parseGoogleForm(rawUrl) {
       const typeCode = item[3];
       const payloadMeta = item[4];
 
-      // Type 8 is Section Header / Page Break (Thêm phần mới)
+      // Type 6 is Section Title / Description block (Tiêu đề mục)
+      if (typeCode === 6) {
+        if (currentSectionIndex === 0 && sections[0].title === 'Phần 1: Khởi đầu' && qTitle) {
+          sections[0].title = qTitle;
+          currentSectionTitle = qTitle;
+        }
+        continue;
+      }
+
+      // Type 8 is Section Header / Page Break (Thêm phần mới / Ngắt trang)
       if (typeCode === 8) {
         currentSectionIndex++;
         currentSectionTitle = qTitle || `Phần ${currentSectionIndex + 1}`;
@@ -123,13 +132,6 @@ export async function parseGoogleForm(rawUrl) {
           title: currentSectionTitle,
           description: qDesc,
           questionCount: 0
-        });
-        questions.push({
-          type: 'SECTION_HEADER',
-          title: currentSectionTitle,
-          description: qDesc,
-          sectionIndex: currentSectionIndex,
-          isSection: true
         });
         continue;
       }
@@ -260,7 +262,7 @@ export async function parseGoogleForm(rawUrl) {
     pageCount,
     pageHistory,
     sections,
-    questionCount: questions.filter(q => !q.isSection).length,
+    questionCount: questions.length,
     questions
   };
 }
